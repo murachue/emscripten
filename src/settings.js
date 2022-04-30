@@ -623,6 +623,7 @@ var LEGACY_VM_SUPPORT = false;
 //                considered to be same as "web" in almost every place
 //    'worker'  - a web worker environment.
 //    'node'    - Node.js.
+//    'deno'    - Deno.
 //    'shell'   - a JS shell like d8, js, or jsc.
 // This settings can be a comma-separated list of these environments, e.g.,
 // "web,worker". If this is the empty string, then all environments are
@@ -639,7 +640,7 @@ var LEGACY_VM_SUPPORT = false;
 // Note that by default we do not include the 'shell' environment since direct
 // usage of d8, js, jsc is extremely rare.
 // [link]
-var ENVIRONMENT = 'web,webview,worker,node';
+var ENVIRONMENT = 'web,webview,worker,node,deno';
 
 // Enable this to support lz4-compressed file packages. They are stored compressed in memory, and
 // decompressed on the fly, avoiding storing the entire decompressed data in memory at once.

@@ -94,6 +94,7 @@ var ENVIRONMENT_IS_WORKER = typeof importScripts == 'function';
 var ENVIRONMENT_IS_WORKER = {{{ ENVIRONMENT === 'worker' }}};
 #endif
 var ENVIRONMENT_IS_NODE = {{{ ENVIRONMENT === 'node' }}};
+var ENVIRONMENT_IS_DENO = {{{ ENVIRONMENT === 'deno' }}};
 var ENVIRONMENT_IS_SHELL = {{{ ENVIRONMENT === 'shell' }}};
 #else // ENVIRONMENT
 // Attempt to auto-detect the environment
@@ -102,7 +103,8 @@ var ENVIRONMENT_IS_WORKER = typeof importScripts == 'function';
 // N.b. Electron.js environment is simultaneously a NODE-environment, but
 // also a web environment.
 var ENVIRONMENT_IS_NODE = typeof process == 'object' && typeof process.versions == 'object' && typeof process.versions.node == 'string';
-var ENVIRONMENT_IS_SHELL = !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_NODE && !ENVIRONMENT_IS_WORKER;
+var ENVIRONMENT_IS_DENO = typeof Deno == 'object';
+var ENVIRONMENT_IS_SHELL = !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_NODE && !ENVIRONMENT_IS_DENO && !ENVIRONMENT_IS_WORKER;
 #endif // ENVIRONMENT
 
 #if ASSERTIONS
@@ -141,8 +143,8 @@ else if (ENVIRONMENT_IS_NODE) {
   _scriptDir = __filename;
 }
 #endif // ENVIRONMENT_MAY_BE_NODE
-#endif
-#endif
+#endif // EXPORT_ES6
+#endif // SHARED_MEMORY && !MODULARIZE
 
 // `/` should be present at the end if `scriptDirectory` is not empty
 var scriptDirectory = '';
@@ -264,6 +266,53 @@ if (ENVIRONMENT_IS_NODE) {
 
 } else
 #endif // ENVIRONMENT_MAY_BE_NODE
+#if ENVIRONMENT_MAY_BE_DENO
+if (ENVIRONMENT_IS_DENO) {
+
+#if ENVIRONMENT
+#if ASSERTIONS
+  if (typeof Deno !== 'object') throw new Error('not compiled for this environment (did you build to HTML and try to run it not on the web, or set ENVIRONMENT to something - like node - and run it someplace else - like on the web?)');
+#endif
+#endif
+  // https://stackoverflow.com/a/61829368
+  // but on windows it become like "/C:/..."
+  // want to use std/path but it make async...
+  scriptDirectory = new URL('.', import.meta.url).pathname;
+
+#include "deno_shell_read.js"
+
+  thisProgram = Deno.mainModule;
+
+  arguments_ = Deno.args;
+
+#if MODULARIZE
+  // MODULARIZE will export the module in the proper place outside, we don't need to export here
+#else
+  if (typeof module != 'undefined') {
+    module['exports'] = Module;
+  }
+#endif
+
+  quit_ = (status, toThrow) => {
+    if (keepRuntimeAlive()) {
+      // process['exitCode'] = status; // how?
+      throw toThrow;
+    }
+    logExceptionOnExit(toThrow);
+    Deno.exit(status);
+  };
+
+  Module['inspect'] = function () { return '[Emscripten Module object]'; };
+
+#if WASM == 2
+  // If target shell does not support Wasm, load the JS version of the code.
+  if (typeof WebAssembly == 'undefined') {
+    eval(Deno.readTextFileSync(locateFile('{{{ TARGET_BASENAME }}}.wasm.js'))+'');
+  }
+#endif
+
+} else
+#endif // ENVIRONMENT_MAY_BE_DENO
 #if ENVIRONMENT_MAY_BE_SHELL || ASSERTIONS
 if (ENVIRONMENT_IS_SHELL) {
 
@@ -355,7 +404,7 @@ if (ENVIRONMENT_IS_SHELL) {
 // Node.js workers are detected as a combination of ENVIRONMENT_IS_WORKER and
 // ENVIRONMENT_IS_NODE.
 #if ENVIRONMENT_MAY_BE_WEB || ENVIRONMENT_MAY_BE_WORKER
-if (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) {
+if ((ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) && !ENVIRONMENT_IS_DENO) {
   if (ENVIRONMENT_IS_WORKER) { // Check worker, not web, since window could be polyfilled
     scriptDirectory = self.location.href;
   } else if (typeof document != 'undefined' && document.currentScript) { // web
@@ -488,6 +537,10 @@ assert(!ENVIRONMENT_IS_WORKER, "worker environment detected but not enabled at b
 
 #if !ENVIRONMENT_MAY_BE_NODE
 assert(!ENVIRONMENT_IS_NODE, "node environment detected but not enabled at build time.  Add 'node' to `-sENVIRONMENT` to enable.");
+#endif
+
+#if !ENVIRONMENT_MAY_BE_DENO
+assert(!ENVIRONMENT_IS_DENO, "deno environment detected but not enabled at build time.  Add 'deno' to `-sENVIRONMENT` to enable.");
 #endif
 
 #if !ENVIRONMENT_MAY_BE_SHELL

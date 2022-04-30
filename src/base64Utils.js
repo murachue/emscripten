@@ -48,6 +48,23 @@ function intArrayFromBase64(s) {
     return new Uint8Array(buf['buffer'], buf['byteOffset'], buf['byteLength']);
   }
 #endif
+#if ENVIRONMENT_MAY_BE_DENO
+  if (typeof ENVIRONMENT_IS_DENO == 'boolean' && ENVIRONMENT_IS_DENO) {
+    // taken from https://deno.land/std@0.137.0/encoding/base64.ts as import introduce async but we can't...
+    // Copyright 2018-2022 the Deno authors. All rights reserved. MIT license.
+    function decode(b64/* : string */)/* : Uint8Array */ {
+      const binString = atob(b64);
+      const size = binString.length;
+      const bytes = new Uint8Array(size);
+      for (let i = 0; i < size; i++) {
+        bytes[i] = binString.charCodeAt(i);
+      }
+      return bytes;
+    }
+
+    return decode(s);
+  }
+#endif
 
   try {
     var decoded = decodeBase64(s);

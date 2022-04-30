@@ -150,7 +150,7 @@ EXTRA_INCOMING_JS_API = [
   'fetchSettings'
 ]
 
-VALID_ENVIRONMENTS = ('web', 'webview', 'worker', 'node', 'shell')
+VALID_ENVIRONMENTS = ('web', 'webview', 'worker', 'node', 'deno', 'shell')
 SIMD_INTEL_FEATURE_TOWER = ['-msse', '-msse2', '-msse3', '-mssse3', '-msse4.1', '-msse4.2', '-msse4', '-mavx']
 SIMD_NEON_FLAGS = ['-mfpu=neon']
 COMPILE_ONLY_FLAGS = {'--default-obj-ext'}
