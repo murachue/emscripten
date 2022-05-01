@@ -302,7 +302,7 @@ mergeInto(LibraryManager.library, {
             oldpos = Deno.seekSync(stream.nfd, 0, Deno.SeekMode.Current)
             Deno.seekSync(stream.nfd, position, Deno.SeekMode.Start)
           }
-          const readNbytes = Deno.readSync(stream.nfd, new Uint8Array(buffer.buffer, offset, length));
+          const readNbytes = Deno.readSync(stream.nfd, new Uint8Array(buffer.buffer, offset ?? 0, length ?? buffer.length));
           if (oldpos !== null) {
             // emulate node.js behavior: If position is an integer [except -1], the file position will be unchanged.
             Deno.seekSync(stream.nfd, oldpos, Deno.SeekMode.Start);
@@ -319,7 +319,7 @@ mergeInto(LibraryManager.library, {
             oldpos = Deno.seekSync(stream.nfd, 0, Deno.SeekMode.Current)
             Deno.seekSync(stream.nfd, position, Deno.SeekMode.Start)
           }
-          const wroteNbytes = Deno.writeSync(stream.nfd, new Uint8Array(buffer.buffer, offset, length));
+          const wroteNbytes = Deno.writeSync(stream.nfd, new Uint8Array(buffer.buffer, offset ?? 0, length ?? buffer.length));
           if (oldpos !== null) {
             // emulate node.js/pwrite(2) behavior: the file position will be unchanged.
             Deno.seekSync(stream.nfd, oldpos, Deno.SeekMode.Start);
