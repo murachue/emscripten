@@ -6,6 +6,7 @@
 
 mergeInto(LibraryManager.library, {
   $DENOFS__deps: ['$FS', '$PATH', '$ERRNO_CODES', '$mmapAlloc'],
+  $DENOFS__postset: 'if (ENVIRONMENT_IS_DENO) { DENOFS.staticInit(); }',
   $DENOFS: {
     isWindows: false,
     staticInit: () => {
