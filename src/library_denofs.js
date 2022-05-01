@@ -276,7 +276,7 @@ mergeInto(LibraryManager.library, {
         var path = DENOFS.realPath(stream.node);
         try {
           if (FS.isFile(stream.node.mode)) {
-            stream.nfd = Deno.openSync(path, DENOFS.flagsForDeno(stream.flags));
+            stream.nfd = Deno.openSync(path, DENOFS.flagsForDeno(stream.flags)).rid;
           }
         } catch (e) {
           if (!e.code) throw e;
