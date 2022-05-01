@@ -265,6 +265,7 @@ mergeInto(LibraryManager.library, {
           // path = nodePath.relative(nodePath.resolve(node.mount.opts.root), path);
           return path;
         } catch (e) {
+          if (DENOFS.isWindows && e.message.includes("(os error 4390)")) throw new FS.ErrnoError({{{ cDefine('EINVAL') }}}) // there is no e.code for "The file or directory is not a reparse point."...
           if (!e.code) throw e;
           throw new FS.ErrnoError(DENOFS.convertDenoCode(e));
         }
