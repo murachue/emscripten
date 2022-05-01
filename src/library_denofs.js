@@ -276,7 +276,7 @@ mergeInto(LibraryManager.library, {
         var path = DENOFS.realPath(stream.node);
         try {
           if (FS.isFile(stream.node.mode)) {
-            stream.nfd = fs.openSync(path, DENOFS.flagsForDeno(stream.flags));
+            stream.nfd = Deno.openSync(path, DENOFS.flagsForDeno(stream.flags));
           }
         } catch (e) {
           if (!e.code) throw e;
@@ -286,7 +286,7 @@ mergeInto(LibraryManager.library, {
       close: (stream) => {
         try {
           if (FS.isFile(stream.node.mode) && stream.nfd) {
-            fs.close(stream.nfd);
+            Deno.close(stream.nfd);
           }
         } catch (e) {
           if (!e.code) throw e;
@@ -319,7 +319,7 @@ mergeInto(LibraryManager.library, {
             oldpos = Deno.seekSync(stream.nfd, 0, Deno.SeekMode.Current)
             Deno.seekSync(stream.nfd, position, Deno.SeekMode.Start)
           }
-          const wroteNbytes = fs.writeSync(stream.nfd, new Uint8Array(buffer.buffer, offset, length));
+          const wroteNbytes = Deno.writeSync(stream.nfd, new Uint8Array(buffer.buffer, offset, length));
           if (oldpos !== null) {
             // emulate node.js/pwrite(2) behavior: the file position will be unchanged.
             Deno.seekSync(stream.nfd, oldpos, Deno.SeekMode.Start);
