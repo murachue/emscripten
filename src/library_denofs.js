@@ -155,7 +155,7 @@ mergeInto(LibraryManager.library, {
           size: stat.size,
           atime: stat.atime,
           mtime: stat.mtime,
-          ctime: stat.ctime,
+          ctime: stat.ctime ?? stat.mtime, // Deno at least v1.20.4 on Windows does not return ctime (not even exist in Deno.FileInfo). fake with mtime...
           blksize: stat.blksize,
           blocks: stat.blocks
         };
@@ -242,7 +242,7 @@ mergeInto(LibraryManager.library, {
       readdir: (node) => {
         var path = DENOFS.realPath(node);
         try {
-          return [...Deno.readdirSync(path)].map(e => e.name);
+          return [...Deno.readDirSync(path)].map(e => e.name);
         } catch (e) {
           if (!e.code) throw e;
           throw new FS.ErrnoError(DENOFS.convertDenoCode(e));
