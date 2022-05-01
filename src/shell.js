@@ -521,6 +521,8 @@ assert(typeof Module['TOTAL_MEMORY'] == 'undefined', 'Module.TOTAL_MEMORY has be
 #if !NODERAWFS
 {{{ makeRemovedFSAssert('NODEFS') }}}
 #endif
+// libdenofs is new, we don't warn user for this.
+// {{{ makeRemovedFSAssert('DENOFS') }}}
 {{{ makeRemovedRuntimeFunction('alignMemory') }}}
 
 #if USE_PTHREADS

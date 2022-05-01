@@ -12,6 +12,9 @@ mergeInto(LibraryManager.library, {
 #if LibraryManager.has('library_nodefs.js')
     '$NODEFS',
 #endif
+#if LibraryManager.has('library_denofs.js')
+    '$DENOFS',
+#endif
 #if LibraryManager.has('library_workerfs.js')
     '$WORKERFS',
 #endif
@@ -1466,6 +1469,9 @@ FS.staticInit();` +
 #endif
 #if LibraryManager.has('library_nodefs.js')
         'NODEFS': NODEFS,
+#endif
+#if LibraryManager.has('library_denofs.js')
+        'DENOFS': DENOFS,
 #endif
 #if LibraryManager.has('library_workerfs.js')
         'WORKERFS': WORKERFS,
