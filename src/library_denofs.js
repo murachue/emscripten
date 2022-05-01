@@ -41,13 +41,13 @@ mergeInto(LibraryManager.library, {
         // Deno on Windows does not return mode at all.
         // simulate mode using isFile/isDirectory/isSymlink and fixed rwx. (no way to get READONLY or not?)
         return (stat.isFile
-          ? 0o100000
+          ? {{{ cDefine('S_IFREG') }}}
           : stat.isDirectory
-            ? 0o40000
+            ? {{{ cDefine('S_IFDIR') }}}
             : stat.isSymlink
-              ? 0o120000
+              ? {{{ cDefine('S_IFLNK') }}}
               : 0)
-          | 0o777/* S_IRWX{U,G,O} */;
+          | {{{ cDefine('S_IRWXUGO') }}};
       }
     },
     mount: (mount) => {
