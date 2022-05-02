@@ -205,7 +205,7 @@ mergeInto(LibraryManager.library, {
           if (FS.isDir(node.mode)) {
             Deno.mkdirSync(path, { mode: node.mode });
           } else {
-            Deno.writeFileSync(path, '', { mode: node.mode });
+            Deno.writeFileSync(path, new Uint8Array(0), { mode: node.mode });
           }
         } catch (e) {
           if (!e.code) throw e;
