@@ -256,6 +256,10 @@ mergeInto(LibraryManager.library, {
         try {
           Deno.symlinkSync(oldPath, newPath); // TODO: {type: 'file'|'dir'} must be specified on Windows...
         } catch (e) {
+          // hacky... but otherwise this does not have "code" and bothering libgit2 testing symlink support.
+          if (DENOFS.isWindows && e.name === 'TypeError' && e.message === 'you must pass a `options` argument for non-existent target path in windows') {
+            throw new FS.ErrnoError({{{ cDefine('EINVAL') }}});
+          }
           if (!e.code) throw e;
           throw new FS.ErrnoError(DENOFS.convertDenoCode(e));
         }
