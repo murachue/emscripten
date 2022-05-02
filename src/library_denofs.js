@@ -101,6 +101,8 @@ mergeInto(LibraryManager.library, {
       flags &= ~{{{ cDefine('O_NOFOLLOW') }}}; // not implemented yet... ignore...
 
       var options = {};
+      // hacky... O_RDONLY used to be 0 and it does not hit "flags & k". defaults to it.
+      Object.assign(options, DENOFS.openOptionsMap[0]);
       for (var k in DENOFS.openOptionsMap) {
         if (flags & k) {
           Object.assign(options, DENOFS.openOptionsMap[k]);
@@ -109,6 +111,7 @@ mergeInto(LibraryManager.library, {
       }
 #if ASSERTIONS
       assert(!flags, 'unknown remain open flags: ' + flags);
+      assert(options.read || options.write, 'at least one OpenOptions option to be true: ' + JSON.stringify(options))
 #endif
       if (!flags) {
         return options;
