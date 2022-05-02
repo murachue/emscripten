@@ -12,7 +12,11 @@ read_ = function shell_read(filename, binary) {
   }
 #endif
 //  import {normalize} from "https://deno.land/std@0.137.0/path/mod.ts"; filename = normalize(filename); // why resolve?
-  filename = (path => path.startsWith("file:///") ? path.substr(8) : path)(filename); // QUICKHACK
+  filename = (path => {
+    // QUICKHACK
+    const filePrefix = Deno.build.os === "windows" ? "file:///" : "file://";
+    return path.startsWith(filePrefix) ? path.substr(filePrefix.length) : path;
+  })(filename);
   return Deno[binary ? "readFileSync" : "readTextFileSync"](filename);
 };
 
@@ -32,6 +36,10 @@ readAsync = (filename, onload, onerror) => {
   }
 #endif
 //  import {normalize} from "https://deno.land/std@0.137.0/path/mod.ts"; filename = normalize(filename); // why resolve?
-  filename = (path => path.startsWith("file:///") ? path.substr(8) : path)(filename); // QUICKHACK
+  filename = (path => {
+    // QUICKHACK
+    const filePrefix = Deno.build.os === "windows" ? "file:///" : "file://";
+    return path.startsWith(filePrefix) ? path.substr(filePrefix.length) : path;
+  })(filename);
   Deno.readFile(filename).then(onload, err);
 };
