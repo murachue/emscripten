@@ -294,6 +294,7 @@ def setup_environment_settings():
   settings.ENVIRONMENT_MAY_BE_WEB = not settings.ENVIRONMENT or 'web' in environments
   settings.ENVIRONMENT_MAY_BE_WEBVIEW = not settings.ENVIRONMENT or 'webview' in environments
   settings.ENVIRONMENT_MAY_BE_NODE = not settings.ENVIRONMENT or 'node' in environments
+  settings.ENVIRONMENT_MAY_BE_DENO = not settings.ENVIRONMENT or 'deno' in environments
   settings.ENVIRONMENT_MAY_BE_SHELL = not settings.ENVIRONMENT or 'shell' in environments
 
   # The worker case also includes Node.js workers when pthreads are

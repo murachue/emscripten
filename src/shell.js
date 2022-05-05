@@ -274,10 +274,12 @@ if (ENVIRONMENT_IS_DENO) {
   if (typeof Deno !== 'object') throw new Error('not compiled for this environment (did you build to HTML and try to run it not on the web, or set ENVIRONMENT to something - like node - and run it someplace else - like on the web?)');
 #endif
 #endif
+#if EXPORT_ES6 // import.meta only exists on ESModule...
   // https://stackoverflow.com/a/61829368
   // but on windows it become like "/C:/..."
   // want to use std/path but it make async...
   scriptDirectory = new URL('.', import.meta.url).pathname;
+#endif
 
 #include "deno_shell_read.js"
 
