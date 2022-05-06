@@ -1327,7 +1327,7 @@ def harness_server_func(in_queue, out_queue, port):
         self.end_headers()
         self.wfile.write(b'OK')
 
-      elif 'stdout=' in self.path or 'stderr=' in self.path or 'exception=' in self.path:
+      elif 'stdout=' in self.path or 'stderr=' in self.path:
         '''
           To get logging to the console from browser tests, add this to
           print/printErr/the exception handler in src/shell.html:
@@ -1453,7 +1453,7 @@ class BrowserCore(RunnerCore):
   def assert_out_queue_empty(self, who):
     if not self.harness_out_queue.empty():
       while not self.harness_out_queue.empty():
-        self.harness_out_queue.get()
+        print('GOT: %s' % self.harness_out_queue.get())
       raise Exception('excessive responses from %s' % who)
 
   # @param extra_tries: how many more times to try this test, if it fails. browser tests have
